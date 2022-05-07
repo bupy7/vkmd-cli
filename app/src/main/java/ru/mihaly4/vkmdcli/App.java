@@ -127,7 +127,10 @@ public final class App {
                     pw,
                     help.getWidth(),
                     APP_NAME + " [OPTIONS] <URL>",
-                    help.getNewLine() + "A lightweight CLI music downloader for VK.com." + help.getNewLine(),
+                    help.getNewLine()
+                            + "A lightweight CLI music downloader for VK.com."
+                            + help.getNewLine()
+                            + help.getNewLine(),
                     createOptions(),
                     help.getLeftPadding(),
                     help.getDescPadding(),
