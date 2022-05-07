@@ -55,8 +55,6 @@ public final class VkRepository {
         int page = 0;
 
         do {
-            logger.println(String.format("Page: %d, Total links: %d", page + 1, links.size()));
-
             oldLinkSize = links.size();
 
             Document doc = Jsoup.parse(fetcher.fetch(page++));
@@ -112,9 +110,9 @@ public final class VkRepository {
             } catch (InterruptedException e) {
                 logger.error("DDOS DELAY: " + e.getMessage());
             }
-        } while (oldLinkSize != links.size());
 
-        logger.println(String.format("Total links: %d", links.size()));
+            logger.println(String.format("Page: %d, Total links: %d", page + 1, links.size()));
+        } while (oldLinkSize != links.size());
 
         return links;
     }

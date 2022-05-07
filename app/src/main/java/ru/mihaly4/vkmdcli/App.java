@@ -61,10 +61,10 @@ public final class App {
         Map <String, String[]> links = null;
         if (urlTarget.getType() == VkHelper.Target.Type.AUDIO) {
             int ownerId = Integer.parseInt(urlTarget.getValue());
-            output.println(String.format("Grab from \"%d\"", ownerId));
+            output.println(String.format("Grabbing from \"%d\"", ownerId));
             links = vkRepository.findAllByAudio(ownerId, ownerId == appArgs.getVkUid());
         } else if (urlTarget.getType() == VkHelper.Target.Type.WALL) {
-            output.println(String.format("Grab from \"%s\"", urlTarget.getValue()));
+            output.println(String.format("Grabbing from \"%s\"", urlTarget.getValue()));
             links = vkRepository.findAllByWall(urlTarget.getValue());
         } else {
             output.error("Unsupported VK.com URL.");
