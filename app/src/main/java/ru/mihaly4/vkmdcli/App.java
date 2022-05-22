@@ -179,6 +179,7 @@ public final class App {
                 throw new AppException("Invalid path to the FFmpeg bin.");
             }
             this.ffmpeg = ffmpeg;
+            return;
         }
 
         Process process;
@@ -264,7 +265,7 @@ public final class App {
                 return "";
             }
             return cli.getOptionValue("vk-cookies") != null
-                    ? preparePath(cli.getOptionValue("vk-cookies"))
+                    ? normalizePath(cli.getOptionValue("vk-cookies"))
                     : "";
         }
 
@@ -274,7 +275,7 @@ public final class App {
                 return "";
             }
             return cli.getOptionValue("ffmpeg") != null
-                    ? preparePath(cli.getOptionValue("ffmpeg"))
+                    ? normalizePath(cli.getOptionValue("ffmpeg"))
                     : "";
         }
 
@@ -284,7 +285,7 @@ public final class App {
                 return "";
             }
             return cli.getOptionValue("save-dir") != null
-                    ? preparePath(cli.getOptionValue("save-dir"))
+                    ? normalizePath(cli.getOptionValue("save-dir"))
                     : "";
         }
 
@@ -345,7 +346,7 @@ public final class App {
         }
 
         @Nonnull
-        private String preparePath(@Nonnull String path) {
+        private String normalizePath(@Nonnull String path) {
             return path.replaceFirst("^~", System.getProperty("user.home"));
         }
     }
