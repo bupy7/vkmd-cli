@@ -68,7 +68,7 @@ public final class VkHelper {
         }
     }
 
-    public static class TargetException extends AppException {
+    public final static class TargetException extends AppException {
         public TargetException(@Nonnull String message) {
             super(message);
         }

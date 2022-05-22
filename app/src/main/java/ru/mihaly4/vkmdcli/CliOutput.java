@@ -7,6 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public final class CliOutput implements ILogger {
+    public void print(@Nonnull String message) {
+        System.out.print(message);
+    }
+
     public void println(@Nonnull String message) {
         System.out.println(message);
     }

@@ -9,22 +9,38 @@ import org.apache.commons.cli.ParseException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class App {
     @Nonnull
     private final static String APP_NAME = "vkmd-cli";
 
+    @Nonnull
     CliOutput output = new CliOutput();
+    @Nonnull
+    private Map<String, String> vkCookies = new HashMap<>();
+    @Nonnull
+    private String ffmpeg = "";
+    @Nonnull
+    private String saveDir = "";
 
-    public App(String[] args) throws IOException {
-        String newline = System.lineSeparator();
-        if (!newline.equals("\n") && !newline.equals("\r")) {
+    public App(String[] args) {
+        run(args);
+    }
+
+    public static void main(String[] args) {
+        new App(args);
+    }
+
+    private void run(String[] args) {
+        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
             output.error("This app only works on Unix compatibility systems.");
             System.exit(1);
         }
@@ -36,21 +52,21 @@ public final class App {
         }
         try {
             appArgs.load();
-        } catch (ParseException e) {
+            loadVkCookies(appArgs.getVkCookies());
+            detectFfmpeg(appArgs.getFfmpeg());
+            detectSaveDir(appArgs.getSaveDir());
+        } catch (AppException e) {
             output.error(e.getMessage());
-            System.exit(1);
-        }
-        if (appArgs.getUrl().isEmpty()) {
-            output.error("Missing required argument: URL");
             System.exit(1);
         }
 
         VkRepository vkRepository = new VkRepository(
-                new VkClient(appArgs.getVkCookies()),
+                new VkClient(vkCookies),
                 new VkAudioLinkDecoder(appArgs.getVkUid()),
                 output
         );
 
+        // grabbing
         VkHelper.Target urlTarget = null;
         try {
             urlTarget = VkHelper.parseTarget(appArgs.getUrl());
@@ -61,29 +77,164 @@ public final class App {
         Map <String, String[]> links = null;
         if (urlTarget.getType() == VkHelper.Target.Type.AUDIO) {
             int ownerId = Integer.parseInt(urlTarget.getValue());
-            output.println(String.format("Grabbing from \"%d\"", ownerId));
+            output.println(String.format("> Grabbing from \"%d\"...", ownerId));
             links = vkRepository.findAllByAudio(ownerId, ownerId == appArgs.getVkUid());
         } else if (urlTarget.getType() == VkHelper.Target.Type.WALL) {
-            output.println(String.format("Grabbing from \"%s\"", urlTarget.getValue()));
+            output.println(String.format("> Grabbing from \"%s\"...", urlTarget.getValue()));
             links = vkRepository.findAllByWall(urlTarget.getValue());
         } else {
             output.error("Unsupported VK.com URL.");
             System.exit(1);
         }
+        output.println("Result:");
+        links.forEach((url, meta) -> output.println(meta[0] + " - " + meta[1] + "\n" + url + "\n"));
 
-        output.println("RESULT:");
-        links.forEach((url, meta) -> output.println(meta[0] + "\n" + meta[1] + "\n" + url + "\n"));
+        // downloading
+        output.println("");
+        if (links.size() > 0) {
+            output.println("> Downloading...");
+            try {
+                downloadAudios(links);
+            } catch (AppException e) {
+                output.error(e.getMessage());
+                System.exit(1);
+            }
+        } else {
+            output.println("Nothing to download.");
+        }
+
+        output.println("Done.");
     }
 
-    public static void main(String[] args) throws Exception {
-        new App(args);
+    private void loadVkCookies(@Nonnull String cookieFile) throws AppException {
+        StringBuilder cookieBuilder;
+        try {
+            //noinspection IOStreamConstructor
+            BufferedReader cookieBufferedReader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(cookieFile)
+            ));
+            cookieBuilder = new StringBuilder();
+            while (cookieBufferedReader.ready()) {
+                cookieBuilder.append(cookieBufferedReader.readLine());
+            }
+            cookieBufferedReader.close();
+        } catch (IOException e) {
+            throw new AppException(e.getMessage());
+        }
+
+        String[] rawCookies = cookieBuilder.toString().split(";\\s*");
+        if (rawCookies.length == 0) {
+            throw new AppException("VK.com Cookies is empty.");
+        }
+
+        vkCookies = new HashMap<>();
+        for (int i = 0; i != rawCookies.length; i++) {
+            String[] cookie = rawCookies[i].split("=", 2);
+            if (cookie.length < 2) {
+                continue;
+            }
+            vkCookies.put(cookie[0].trim(), cookie[1].trim());
+        }
+    }
+
+    private void downloadAudios(@Nonnull Map<String, String[]> links) throws AppException {
+        output.println(String.format("FFmpeg: %s", ffmpeg));
+
+        for (Map.Entry<String, String[]> link : links.entrySet()) {
+            String audioName = link.getValue()[0] + " - " + link.getValue()[1];
+
+            output.print(audioName + "...");
+
+            try {
+                // M3U8 to MP3
+                // ffmpeg -y -http_persistent false -i link.m3u8 -c copy audio.mp3
+                Process process = Runtime.getRuntime().exec(new String[]{
+                        ffmpeg,
+                        "-y",
+                        "-http_persistent",
+                        "false",
+                        "-i",
+                        link.getKey(),
+                        "-c",
+                        "copy",
+                        String.format("%s/%s.mp3", saveDir, audioName)
+                });
+                if (process.waitFor() != 0) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                    String error = reader.lines().collect(Collectors.joining());
+                    output.println("ERROR");
+                    if (error.isEmpty()) {
+                        output.error("Unknown error has occurred");
+                    } else {
+                        output.error(error);
+                    }
+                }
+                output.println("OK");
+            } catch (IOException | InterruptedException e) {
+                throw new AppException(e.getMessage());
+            }
+        }
+    }
+
+    private void detectFfmpeg(@Nonnull String ffmpeg) throws AppException {
+        if (!ffmpeg.isEmpty()) {
+            if (!ffmpeg.startsWith("/")) {
+                throw new AppException("Invalid path to the FFmpeg bin.");
+            }
+            this.ffmpeg = ffmpeg;
+        }
+
+        Process process;
+        int exitCode;
+        try {
+            process = Runtime.getRuntime().exec(new String[]{"which", "ffmpeg"});
+            exitCode = process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            throw new AppException(e.getMessage());
+        }
+
+        if (exitCode != 0) {
+            throw new AppException("Cannot detect FFmpeg automatically.");
+        }
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String whichResult;
+        try {
+            whichResult = reader.readLine();
+            reader.close();
+        } catch (IOException e) {
+            throw new AppException(e.getMessage());
+        }
+
+        if (!whichResult.startsWith("/")) {
+            throw new AppException("Cannot detect FFmpeg automatically.");
+        }
+
+        this.ffmpeg = whichResult;
+    }
+
+    private void detectSaveDir(@Nonnull String saveDir) throws AppException {
+        if (!saveDir.startsWith("/")) {
+            throw new AppException("Invalid path to the saving directory.");
+        }
+
+        File saveDirFile = new File(saveDir);
+        if (!saveDirFile.exists()) {
+            if (!saveDirFile.mkdirs()) {
+                throw new AppException("Cannot create saving directory.");
+            }
+        } else {
+            if (!saveDirFile.canWrite()) {
+                throw new AppException("The saving directory is not writable.");
+            }
+        }
+
+        this.saveDir = saveDir;
     }
 
     private final static class AppArgs {
         @Nullable
         private CommandLine cli;
-        @Nonnull
-        private Map<String, String> vkCookies = new HashMap<>();
         @Nonnull
         private final String[] args;
 
@@ -111,13 +262,41 @@ public final class App {
         }
 
         @Nonnull
-        public Map<String, String> getVkCookies() {
-            return vkCookies;
+        public String getVkCookies() {
+            if (cli == null || cli.getArgs().length < 1) {
+                return "";
+            }
+            return cli.getOptionValue("vk-cookies") != null
+                    ? preparePath(cli.getOptionValue("vk-cookies"))
+                    : "";
         }
 
-        public void load() throws ParseException, IOException {
-            cli = new DefaultParser().parse(createOptions(), args);
-            loadVkCookies(cli.getOptionValue("vk-cookies") != null ? cli.getOptionValue("vk-cookies") : "");
+        @Nonnull
+        public String getFfmpeg() {
+            if (cli == null || cli.getArgs().length < 1) {
+                return "";
+            }
+            return cli.getOptionValue("ffmpeg") != null
+                    ? preparePath(cli.getOptionValue("ffmpeg"))
+                    : "";
+        }
+
+        @Nonnull
+        public String getSaveDir() {
+            if (cli == null || cli.getArgs().length < 1) {
+                return "";
+            }
+            return cli.getOptionValue("save-dir") != null
+                    ? preparePath(cli.getOptionValue("save-dir"))
+                    : "";
+        }
+
+        public void load() throws AppException {
+            try {
+                cli = new DefaultParser().parse(createOptions(), args);
+            } catch (ParseException e) {
+                throw new AppException(e.getMessage());
+            }
         }
 
         public void printHelp(@Nonnull CliOutput output) {
@@ -140,28 +319,6 @@ public final class App {
             pw.flush();
         }
 
-        private void loadVkCookies(@Nonnull String cookieFile) throws IOException {
-            //noinspection IOStreamConstructor
-            BufferedReader cookieBufferedReader = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(cookieFile.replaceFirst("^~", System.getProperty("user.home")))
-            ));
-            StringBuilder cookieBuilder = new StringBuilder();
-            while (cookieBufferedReader.ready()) {
-                cookieBuilder.append(cookieBufferedReader.readLine());
-            }
-            cookieBufferedReader.close();
-
-            String[] rawCookies = cookieBuilder.toString().split(";\\s*");
-            vkCookies = new HashMap<>();
-            for (int i = 0; i != rawCookies.length; i++) {
-                String[] cookie = rawCookies[i].split("=", 2);
-                if (cookie.length < 2) {
-                    continue;
-                }
-                vkCookies.put(cookie[0].trim(), cookie[1].trim());
-            }
-        }
-
         @Nonnull
         private Options createOptions() {
             Options options = new Options();
@@ -173,10 +330,26 @@ public final class App {
                     "Path to the file contains VK.com cookies."
             );
             options.addRequiredOption(null, "vk-uid", true, "VK.com user ID.");
+            options.addRequiredOption(
+                    null,
+                    "save-dir",
+                    true,
+                    "Path to the saving directory where we will put downloaded audio files.");
 
             options.addOption("h", "help", false, "Show help of application.");
+            options.addOption(
+                    null,
+                    "ffmpeg",
+                    true,
+                    "Path to the FFmpeg bin. By default will search automatically."
+            );
 
             return options;
+        }
+
+        @Nonnull
+        private String preparePath(@Nonnull String path) {
+            return path.replaceFirst("^~", System.getProperty("user.home"));
         }
     }
 }

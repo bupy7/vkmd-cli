@@ -111,7 +111,7 @@ public final class VkRepository {
                 logger.error("DDOS DELAY: " + e.getMessage());
             }
 
-            logger.println(String.format("Page: %d, Total links: %d", page + 1, links.size()));
+            logger.println(String.format("Page: %d, Total links: %d", page, links.size()));
         } while (oldLinkSize != links.size());
 
         return links;

@@ -6,4 +6,8 @@ public class AppException extends java.lang.Exception {
     public AppException(@Nonnull String message) {
         super(message);
     }
+
+    public AppException(@Nonnull Throwable cause) {
+        super(cause);
+    }
 }
