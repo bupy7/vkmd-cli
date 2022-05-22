@@ -64,7 +64,7 @@ Build Docker image:
 docker build -t bupy7/vkmd-cli .
 ```
 
-Run Docker image:
+Run Docker container:
 
 ```bash
 docker run --rm -it -v ~/vkmd-cli:/vkmd-cli bupy7/vkmd-cli https://vk.com/retrowavetouch \
