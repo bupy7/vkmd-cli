@@ -20,9 +20,6 @@ import java.util.stream.Collectors;
 
 public final class App {
     @Nonnull
-    private final static String APP_NAME = "vkmd-cli";
-
-    @Nonnull
     CliOutput output = new CliOutput();
     @Nonnull
     private Map<String, String> vkCookies = new HashMap<>();
@@ -305,7 +302,7 @@ public final class App {
             help.printHelp(
                     pw,
                     help.getWidth(),
-                    APP_NAME + " [OPTIONS] <URL>",
+                    "[OPTIONS] <URL>",
                     help.getNewLine()
                             + "A lightweight CLI music downloader for VK.com."
                             + help.getNewLine()

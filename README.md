@@ -9,23 +9,39 @@ A lightweight CLI music downloader for VK.com.
 
 ## Usage
 
+```
+vkmd-cli [OPTIONS] <URL>
+
+    --ffmpeg <arg>       Path to the FFmpeg bin. By default will search
+                         automatically.
+ -h,--help               Show help of application.
+    --save-dir <arg>     Path to the saving directory where we will put
+                         downloaded audio files.
+    --vk-cookies <arg>   Path to the file contains VK.com cookies.
+    --vk-uid <arg>       VK.com user ID.
+```
+
+## Run
+
 First of all, copy VK.com cookies from site and put into some file, example "~/vkcom-cookies.txt".
 
-Run:
+**Using JRE:**
 
 ```bash
-java -jar vkmd-cli-1.0.0.jar --vk-cookies="~/vkcom-cookies.txt" --vk-uid=100200300 https://vk.com/retrowavetouch
+java -jar vkmd-cli-1.0.0.jar https://vk.com/retrowavetouch \
+  --vk-cookies="~/vkcom-cookies.txt" \
+  --vk-uid=100200300 \
+  --save-dir=~/vkmd-cli-downloads
 ```
 
 - **--vk-cookies** - Path to the file of VK.com cookies;
 - **--vk-uid** - VK.com user ID;
+- **--save-dir** - Path to save downloaded audios;
 - **https://vk.com/retrowavetouch** - URL of page with audios.
 
-## M3U8 to MP3
+**Using Docker:**
 
-```
-ffmpeg -http_persistent false -i link.m3u8 -c copy audio.mp3
-```
+TODO
 
 ## License
 
