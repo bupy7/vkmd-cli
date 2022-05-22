@@ -26,7 +26,7 @@ vkmd-cli [OPTIONS] <URL>
 
 ## Run
 
-First of all, create `~/vkmd-cli` directory and [copy VK.com cookies from site](#wow-to-copy-vkcom-cookies-correctly) into file `~/vkmd-cli/vk-cookies.txt`.
+First of all, create `~/vkmd-cli` directory and [copy VK.com cookies from site](#how-to-copy-vkcom-cookies-correctly) into file `~/vkmd-cli/vk-cookies.txt`.
 
 **Using JRE:**
 
