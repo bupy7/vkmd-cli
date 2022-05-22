@@ -5,7 +5,10 @@ A lightweight CLI music downloader for VK.com.
 ## Requirements
 
 - Java >= 8.0;
+- [FFmpeg](https://www.ffmpeg.org/);
 - Linux or macOS;
+
+> Docker image of this app has everything out of box and will works even on Windows OS.
 
 ## Usage
 
@@ -23,15 +26,21 @@ vkmd-cli [OPTIONS] <URL>
 
 ## Run
 
-First of all, copy VK.com cookies from site and put into some file, example "~/vkcom-cookies.txt".
+First of all, create `~/vkmd-cli` directory and [copy VK.com cookies from site](#wow-to-copy-vkcom-cookies-correctly) into file `~/vkmd-cli/vk-cookies.txt`.
 
 **Using JRE:**
 
+Download compiled application:
+
 ```bash
-java -jar vkmd-cli-1.0.0.jar https://vk.com/retrowavetouch \
-  --vk-cookies="~/vkcom-cookies.txt" \
+wget -O ./vkmd-cli.jar @TODO
+```
+
+```bash
+java -jar vkmd-cli.jar https://vk.com/retrowavetouch \
+  --vk-cookies=~/vkmd-cli/vk-cookies.txt \
   --vk-uid=100200300 \
-  --save-dir=~/vkmd-cli-downloads
+  --save-dir=~/vkmd-cli
 ```
 
 - **--vk-cookies** - Path to the file of VK.com cookies;
@@ -41,7 +50,32 @@ java -jar vkmd-cli-1.0.0.jar https://vk.com/retrowavetouch \
 
 **Using Docker:**
 
-TODO
+Clone repository:
+
+```bash
+git clone https://github.com/bupy7/vkmd-cli.git
+git checkout 1.0.0
+```
+
+Build Docker image:
+
+```bash
+cd vkmd-cli
+docker build -t bupy7/vkmd-cli .
+```
+
+Run Docker image:
+
+```bash
+docker run --rm -it -v ~/vkmd-cli:/vkmd-cli bupy7/vkmd-cli https://vk.com/retrowavetouch \
+  --vk-cookies=~/vkmd-cli/vk-cookies.txt \
+  --vk-uid=100200300 \
+  --save-dir=~/vkmd-cli
+```
+
+## How to copy VK.com cookies correctly
+
+@TODO
 
 ## License
 

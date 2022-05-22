@@ -44,9 +44,15 @@ java {
 tasks.named('jar') {
     manifest {
         attributes(
-                'Main-Class': application.getMainClass(),
-                'Class-Path': sourceSets.getByName('main').runtimeClasspath.join(' ')
+                'Main-Class': application.getMainClass()
         )
+    }
+    from {
+        configurations.getByName('runtimeClasspath').filter {
+            it.exists()
+        }.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
     }
 }
 
