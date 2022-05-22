@@ -54,13 +54,13 @@ Clone repository:
 
 ```bash
 git clone https://github.com/bupy7/vkmd-cli.git
+cd vkmd-cli
 git checkout 1.0.0
 ```
 
 Build Docker image:
 
 ```bash
-cd vkmd-cli
 docker build -t bupy7/vkmd-cli .
 ```
 
