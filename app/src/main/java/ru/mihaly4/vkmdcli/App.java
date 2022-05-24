@@ -156,7 +156,11 @@ public final class App {
                         link.getKey(),
                         "-c",
                         "copy",
-                        String.format("%s/%s.mp3", saveDir, audioName.replaceAll("[^a-zA-Z0-9._\\-]+", "_"))
+                        String.format(
+                                "%s/%s.mp3",
+                                saveDir,
+                                audioName.replaceAll("[^a-zA-Z0-9._\\-\\040()\\[\\]]+", "_")
+                        )
                 });
                 if (process.waitFor() != 0) {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
