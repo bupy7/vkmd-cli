@@ -16,6 +16,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class App {
@@ -144,6 +146,11 @@ public final class App {
 
             output.print(String.format("%d/%d. %s", ++currentLink, totalLinks, audioName + "..."));
 
+            // filtering audio name for file name
+            Pattern p = Pattern.compile("[^\\w.\\-\\040]+", Pattern.UNICODE_CHARACTER_CLASS);
+            Matcher matcher = p.matcher(audioName);
+            audioName = matcher.replaceAll("_");
+
             try {
                 // M3U8 to MP3
                 // ffmpeg -y -http_persistent false -i link.m3u8 -c copy audio.mp3
@@ -156,11 +163,7 @@ public final class App {
                         link.getKey(),
                         "-c",
                         "copy",
-                        String.format(
-                                "%s/%s.mp3",
-                                saveDir,
-                                audioName.replaceAll("[^a-zA-Z0-9._\\-\\040()\\[\\]]+", "_")
-                        )
+                        String.format("%s/%s.mp3", saveDir, audioName)
                 });
                 if (process.waitFor() != 0) {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
