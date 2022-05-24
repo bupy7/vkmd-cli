@@ -20,7 +20,9 @@ vkmd-cli [OPTIONS] <URL>
  -h,--help               Show help of application.
     --save-dir <arg>     Path to the saving directory where we will put
                          downloaded audio files.
-    --vk-cookies <arg>   Path to the file contains VK.com cookies.
+    --vk-cookies <arg>   Path to the file contains VK.com cookies. Format
+                         file is (without quotes): "cookie_key1=cookie_value1;
+                         cookie_key2=cookie_value2; cookie_key3=cookie_value"
     --vk-uid <arg>       VK.com user ID.
 ```
 
@@ -33,7 +35,7 @@ First of all, create `~/vkmd-cli` directory and [copy VK.com cookies from site](
 Download compiled application:
 
 ```bash
-wget -O ./vkmd-cli.jar @TODO
+wget -O ./vkmd-cli.jar [@TODO URL of jar file]
 ```
 
 ```bash
@@ -75,7 +77,21 @@ docker run --rm -it -v ~/vkmd-cli:/vkmd-cli bupy7/vkmd-cli https://vk.com/retrow
 
 ## How to copy VK.com cookies correctly
 
-@TODO
+You have to extract VK.com cookies from first request of any page. You may do that using Developer Tools in Chrome, Safari, Mozilla and other browsers.
+
+> Notice! Extracting cookies using `document.cookie` is not correctly, due to there are non HTTP cookies only.
+
+**Instruction for Chrome and any Chromium like browsers:**
+
+1. Open https://vk.com and log in.
+2. Open "Developer tools" (macOS: Command + Shift + I; PC: Ctrl + Shift + I).
+3. Refresh current page.
+4. Choose "Network" tab in "Developer tools" panel.
+5. Filter results in the tab using "Doc" request type.
+6. Choose first request and choose "Header" tab in the right section.
+7. Go to "Request Headers", in the right section, and find "cookie:" header.
+8. Copy all text between "cookie: " and next header name.
+9. Put this text into `~/vkmd-cli/vk-cookies.txt` file and save.
 
 ## License
 

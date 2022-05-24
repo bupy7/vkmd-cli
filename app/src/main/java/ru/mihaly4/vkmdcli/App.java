@@ -71,7 +71,7 @@ public final class App {
             output.error(e.getMessage());
             System.exit(1);
         }
-        Map <String, String[]> links = null;
+        Map<String, String[]> links = null;
         if (urlTarget.getType() == VkHelper.Target.Type.AUDIO) {
             int ownerId = Integer.parseInt(urlTarget.getValue());
             output.println(String.format("> Grabbing from \"%d\"...", ownerId));
@@ -137,10 +137,12 @@ public final class App {
     private void downloadAudios(@Nonnull Map<String, String[]> links) throws AppException {
         output.println(String.format("FFmpeg: %s", ffmpeg));
 
+        final int totalLinks = links.size();
+        int currentLink = 0;
         for (Map.Entry<String, String[]> link : links.entrySet()) {
             String audioName = link.getValue()[0] + " - " + link.getValue()[1];
 
-            output.print(audioName + "...");
+            output.print(String.format("%d/%d. %s", ++currentLink, totalLinks, audioName + "..."));
 
             try {
                 // M3U8 to MP3
@@ -222,6 +224,9 @@ public final class App {
                 throw new AppException("Cannot create saving directory.");
             }
         } else {
+            if (!saveDirFile.isDirectory()) {
+                throw new AppException("The saving directory is not directory.");
+            }
             if (!saveDirFile.canWrite()) {
                 throw new AppException("The saving directory is not writable.");
             }
@@ -326,6 +331,8 @@ public final class App {
                     "vk-cookies",
                     true,
                     "Path to the file contains VK.com cookies."
+                            + " Format file is (without quotes): cookie_key1=cookie_value1; cookie_key2=cookie_value2;"
+                            + " cookie_key3=cookie_value3"
             );
             options.addRequiredOption(null, "vk-uid", true, "VK.com user ID.");
             options.addRequiredOption(
