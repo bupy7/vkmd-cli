@@ -48,7 +48,7 @@ java -jar vkmd-cli.jar https://vk.com/retrowavetouch \
 - **--vk-cookies** - Path to the file of VK.com cookies;
 - **--vk-uid** - VK.com user ID;
 - **--save-dir** - Path to save downloaded audios;
-- **https://vk.com/retrowavetouch** - URL of page with audios.
+- **https://vk.com/retrowavetouch** - URL of page with audios (mobile or desktop URL, never mind).
 
 **Using Docker:**
 
@@ -70,9 +70,9 @@ Run Docker container:
 
 ```bash
 docker run --rm -it -v ~/vkmd-cli:/vkmd-cli bupy7/vkmd-cli https://vk.com/retrowavetouch \
-  --vk-cookies=~/vkmd-cli/vk-cookies.txt \
+  --vk-cookies=/vkmd-cli/vk-cookies.txt \
   --vk-uid=100200300 \
-  --save-dir=~/vkmd-cli
+  --save-dir=/vkmd-cli
 ```
 
 ## How to copy VK.com cookies correctly
@@ -80,18 +80,33 @@ docker run --rm -it -v ~/vkmd-cli:/vkmd-cli bupy7/vkmd-cli https://vk.com/retrow
 You have to extract VK.com cookies from first request of any page. You may do that using Developer Tools in Chrome, Safari, Mozilla and other browsers.
 
 > Notice! Extracting cookies using `document.cookie` is not correctly, due to there are non HTTP cookies only.
+> Notice! You have to copy cookies from mobile version of VK.com (https://m.vk.com).
 
 **Instruction for Chrome and any Chromium like browsers:**
 
-1. Open https://vk.com and log in.
+1. Open https://m.vk.com and log in.
 2. Open "Developer tools" (macOS: Command + Shift + I; PC: Ctrl + Shift + I).
 3. Refresh current page.
 4. Choose "Network" tab in "Developer tools" panel.
 5. Filter results in the tab using "Doc" request type.
 6. Choose first request and choose "Header" tab in the right section.
 7. Go to "Request Headers", in the right section, and find "cookie:" header.
-8. Copy all text between "cookie: " and next header name.
-9. Put this text into `~/vkmd-cli/vk-cookies.txt` file and save.
+8. Right-click on the "cookie:", and choose "Copy value".
+9. Paste this text into `~/vkmd-cli/vk-cookies.txt` file and save.
+
+## Build
+
+**Distribution:**
+
+```bash
+./gradlew clean build
+```
+
+**Uber JAR:**
+
+```bash
+./gradlew clean uberJar
+```
 
 ## License
 

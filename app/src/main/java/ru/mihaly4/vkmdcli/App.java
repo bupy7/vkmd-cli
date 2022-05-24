@@ -156,7 +156,7 @@ public final class App {
                         link.getKey(),
                         "-c",
                         "copy",
-                        String.format("%s/%s.mp3", saveDir, audioName)
+                        String.format("%s/%s.mp3", saveDir, audioName.replaceAll("[^a-zA-Z0-9._\\-]+", "_"))
                 });
                 if (process.waitFor() != 0) {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -331,8 +331,8 @@ public final class App {
                     "vk-cookies",
                     true,
                     "Path to the file contains VK.com cookies."
-                            + " Format file is (without quotes): cookie_key1=cookie_value1; cookie_key2=cookie_value2;"
-                            + " cookie_key3=cookie_value3"
+                            + " Format file is: cookie_key1=cookie_value1; cookie_key2=cookie_value2;"
+                            + " cookie_key3=cookie_value3 ... (and so on)."
             );
             options.addRequiredOption(null, "vk-uid", true, "VK.com user ID.");
             options.addRequiredOption(

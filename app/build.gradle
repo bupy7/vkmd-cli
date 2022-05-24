@@ -41,21 +41,6 @@ java {
     sourceCompatibility = '1.8'
 }
 
-tasks.named('jar') {
-    manifest {
-        attributes(
-                'Main-Class': application.getMainClass()
-        )
-    }
-    from {
-        configurations.getByName('runtimeClasspath').filter {
-            it.exists()
-        }.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-}
-
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
@@ -69,5 +54,26 @@ tasks.withType(JavaCompile) {
 tasks.named('run') {
     if (project.hasProperty("runargs")) {
         args runargs.split(',')
+    }
+}
+
+tasks.register('uberJar', Jar) {
+    archiveClassifier = 'uber'
+
+    manifest {
+        attributes(
+                'Main-Class': application.getMainClass()
+        )
+    }
+
+    from sourceSets.main.output
+
+    dependsOn configurations.getByName('runtimeClasspath')
+    from {
+        configurations.getByName('runtimeClasspath').filter {
+            it.exists()
+        }.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
     }
 }
