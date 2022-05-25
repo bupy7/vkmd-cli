@@ -8,7 +8,8 @@ A lightweight CLI music downloader for VK.com.
 - [FFmpeg](https://www.ffmpeg.org/);
 - Linux or macOS;
 
-> Docker image of this app has everything out of box and will works even on Windows OS.
+> Docker image of this app has everything out of box. I recommend you to use it.
+> Notice! Windows is not supporting.
 
 ## Usage
 

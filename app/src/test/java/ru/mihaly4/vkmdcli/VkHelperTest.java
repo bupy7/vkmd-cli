@@ -40,4 +40,33 @@ public final class VkHelperTest {
 
         assertThrowsExactly(VkHelper.TargetException.class, () -> VkHelper.parseTarget("https://vk.ru/invalid"));
     }
+
+    @Test
+    public void decodeHtmlSpecialChars() {
+        assertEquals("&&\"\"''<<>>", VkHelper.decodeHtmlSpecialChars("&&amp;\"&quot;'&#039;<&lt;>&gt;"));
+        assertEquals(
+                "abc&&\"\"''<<>>123",
+                VkHelper.decodeHtmlSpecialChars("abc&&amp;\"&quot;'&#039;<&lt;>&gt;123")
+        );
+    }
+
+    @Test
+    public void sanitizeFileName() {
+        assertEquals(
+                "DEAD BLONDE_ GSPD - Первая дискотека",
+                VkHelper.sanitizeFileName("DEAD BLONDE, GSPD - Первая дискотека")
+        );
+        assertEquals(
+                "Эдуард Артемьев - Музыка из к_ф _Курьер_",
+                VkHelper.sanitizeFileName("Эдуард Артемьев - Музыка из к/ф \"Курьер\"")
+        );
+        assertEquals(
+                "Ария - Тореро _Remastered 2012_",
+                VkHelper.sanitizeFileName("Ария - Тореро (Remastered 2012)")
+        );
+        assertEquals(
+                "_1234567890-_________________________________",
+                VkHelper.sanitizeFileName("§1234567890-=±!@#$%^&*()_+][}{'\"\\/;:<>~`№₽?.,")
+        );
+    }
 }

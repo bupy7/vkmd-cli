@@ -14,7 +14,7 @@ public final class VkHelper {
             JSONArray audioData = new JSONArray(audioDataJson);
 
             String fullId = audioData.get(1) + "_" + audioData.get(0);
-            String[] tokens = ((String)audioData.get(13)).split("/");
+            String[] tokens = ((String) audioData.get(13)).split("/");
             String actionHash = tokens.length > 2 ? tokens[2] : "";
             String urlHash = tokens.length > 5 ? tokens[5] : "";
 
@@ -39,6 +39,21 @@ public final class VkHelper {
         }
 
         throw new TargetException("Invalid VK.com URL.");
+    }
+
+    @Nonnull
+    public static String decodeHtmlSpecialChars(@Nonnull String text) {
+        return text.replaceAll("&amp;", "&")
+                .replaceAll("&quot;", "\"")
+                .replaceAll("&#039;", "'")
+                .replaceAll("&lt;", "<")
+                .replaceAll("&gt;", ">");
+    }
+
+    @Nonnull
+    public static String sanitizeFileName(@Nonnull String fileName) {
+        // any letters, numbers, space, and - _
+        return fileName.replaceAll("[^\\p{L}\\p{N}\\040\\-_]", "_");
     }
 
     public final static class Target {

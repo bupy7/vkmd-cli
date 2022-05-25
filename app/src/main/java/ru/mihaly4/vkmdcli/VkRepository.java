@@ -85,8 +85,8 @@ public final class VkRepository {
                     for (int i = 0; i != audioUrls.length(); i++) {
                         JSONArray audioUrl = audioUrls.optJSONArray(i);
 
-                        String author = audioUrl.optString(4);
-                        String title = audioUrl.optString(3);
+                        String author = VkHelper.decodeHtmlSpecialChars(audioUrl.optString(4));
+                        String title = VkHelper.decodeHtmlSpecialChars(audioUrl.optString(3));
                         String link = audioUrl.optString(2);
 
                         // decode api_unavailable

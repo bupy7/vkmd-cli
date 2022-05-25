@@ -39,7 +39,7 @@ public final class App {
     }
 
     private void run(String[] args) {
-        if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             output.error("This app only works on Unix compatibility systems.");
             System.exit(1);
         }
@@ -146,10 +146,10 @@ public final class App {
 
             output.print(String.format("%d/%d. %s", ++currentLink, totalLinks, audioName + "..."));
 
-            // filtering audio name for file name
-            Pattern p = Pattern.compile("[^\\w.\\-\\040]+", Pattern.UNICODE_CHARACTER_CLASS);
-            Matcher matcher = p.matcher(audioName);
-            audioName = matcher.replaceAll("_");
+            audioName = VkHelper.sanitizeFileName(audioName);
+            if (audioName.replaceAll("_", "").length() == 0) {
+                audioName = String.valueOf(currentLink);
+            }
 
             try {
                 // M3U8 to MP3
