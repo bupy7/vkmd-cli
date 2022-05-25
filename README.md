@@ -9,7 +9,8 @@ A lightweight CLI music downloader for VK.com.
 - Linux or macOS;
 
 > Docker image of this app has everything out of box. I recommend you to use it.
-> Notice! Windows is not supporting.
+ 
+> **Notice!** Windows is not supporting.
 
 ## Usage
 
@@ -80,8 +81,9 @@ docker run --rm -it -v ~/vkmd-cli:/vkmd-cli bupy7/vkmd-cli https://vk.com/retrow
 
 You have to extract VK.com cookies from first request of any page. You may do that using Developer Tools in Chrome, Safari, Mozilla and other browsers.
 
-> Notice! Extracting cookies using `document.cookie` is not correctly, due to there are non HTTP cookies only.
-> Notice! You have to copy cookies from mobile version of VK.com (https://m.vk.com).
+> **Notice!** Extracting cookies using `document.cookie` is not correctly, due to there are non HTTP cookies only.
+
+> **Notice!** You have to copy cookies from mobile version of VK.com (https://m.vk.com).
 
 **Instruction for Chrome and any Chromium like browsers:**
 
