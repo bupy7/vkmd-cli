@@ -36,11 +36,11 @@ First of all, create `~/vkmd-cli` directory and [copy VK.com cookies from site](
 Download compiled application:
 
 ```bash
-wget -O ./vkmd-cli.jar [@TODO URL of jar file]
+wget -O ./vkmd-cli.jar https://github.com/bupy7/vkmd-cli/archive/refs/tags/vkmd-cli-1.0.0-uber.jar
 ```
 
 ```bash
-java -jar vkmd-cli.jar https://vk.com/retrowavetouch \
+java -jar ./vkmd-cli.jar https://vk.com/retrowavetouch \
   --vk-cookies=~/vkmd-cli/vk-cookies.txt \
   --vk-uid=100200300 \
   --save-dir=~/vkmd-cli

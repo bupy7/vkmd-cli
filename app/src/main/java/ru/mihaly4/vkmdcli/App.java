@@ -339,7 +339,7 @@ public final class App {
                     true,
                     "Path to the file contains VK.com cookies."
                             + " Format file is: cookie_key1=cookie_value1; cookie_key2=cookie_value2;"
-                            + " cookie_key3=cookie_value3 ... (and so on)."
+                            + " cookie_key3=cookie_value3 ... (and so on). Cookies have to be from https://m.vk.com ."
             );
             options.addRequiredOption(null, "vk-uid", true, "VK.com user ID.");
             options.addRequiredOption(
