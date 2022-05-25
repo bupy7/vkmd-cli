@@ -52,7 +52,7 @@ public final class VkHelper {
 
     @Nonnull
     public static String sanitizeFileName(@Nonnull String fileName) {
-        // any letters, numbers, space, and - _
+        // except any letters, numbers, space, and - _
         return fileName.replaceAll("[^\\p{L}\\p{N}\\040\\-_]", "_");
     }
 
