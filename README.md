@@ -44,6 +44,8 @@ Download compiled application:
 wget -O ./vkmd-cli.jar https://github.com/bupy7/vkmd-cli/releases/download/x.x.x/vkmd-cli-x.x.x-uber.jar
 ```
 
+Run jar file using Java:
+
 ```bash
 java -jar ./vkmd-cli.jar https://vk.com/retrowavetouch \
   --vk-cookies=~/vkmd-cli/vk-cookies.txt \
