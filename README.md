@@ -23,8 +23,10 @@ vkmd-cli [OPTIONS] <URL>
     --save-dir <arg>     Path to the saving directory where we will put
                          downloaded audio files.
     --vk-cookies <arg>   Path to the file contains VK.com cookies. Format
-                         file is (without quotes): "cookie_key1=cookie_value1;
-                         cookie_key2=cookie_value2; cookie_key3=cookie_value"
+                         file is: cookie_key1=cookie_value1;
+                         cookie_key2=cookie_value2;
+                         cookie_key3=cookie_value3 ... (and so on).
+                         Cookies has to be from https://m.vk.com .
     --vk-uid <arg>       VK.com user ID.
 ```
 
