@@ -38,8 +38,10 @@ First of all, create `~/vkmd-cli` directory and [copy VK.com cookies from site](
 
 Download compiled application:
 
+> Where `x.x.x` is the latest available version.
+
 ```bash
-wget -O ./vkmd-cli.jar https://github.com/bupy7/vkmd-cli/releases/download/1.0.0/vkmd-cli-1.0.0-uber.jar
+wget -O ./vkmd-cli.jar https://github.com/bupy7/vkmd-cli/releases/download/x.x.x/vkmd-cli-x.x.x-uber.jar
 ```
 
 ```bash
